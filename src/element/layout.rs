@@ -101,8 +101,13 @@ impl BoardPaintLayout {
     }
 
     pub fn square_bounds(&self, file: u8, rank: u8) -> Bounds<Pixels> {
-        let mut f = file as f32;
-        let mut r = rank as f32;
+        self.square_bounds_f32(file as f32, rank as f32)
+    }
+
+    /// Square bounds from storage file/rank, including fractional animation offsets.
+    pub fn square_bounds_f32(&self, file: f32, rank: f32) -> Bounds<Pixels> {
+        let mut f = file;
+        let mut r = rank;
         if self.view.flip_files {
             f = 7.0 - f;
         }
@@ -236,5 +241,35 @@ mod tests {
         let (_, bottom) = black.storage_coord_at_screen(0, 7);
         assert_eq!(RANKS[top as usize], '1');
         assert_eq!(RANKS[bottom as usize], '8');
+    }
+
+    #[test]
+    fn animation_offset_uses_storage_coordinates() {
+        use gpui::*;
+
+        fn layout_for(orientation: Color) -> Layout {
+            Layout {
+                board: Bounds::new(point(px(0.), px(0.)), size(px(400.), px(400.))),
+                square: px(50.),
+                view: GridView::from_orientation(orientation),
+                show_coords: false,
+                ranks_on_left: true,
+                label_color: rgb(0xc0c0c0).into(),
+                eval_bar: None,
+            }
+        }
+
+        let white = layout_for(Color::White);
+        let black = layout_for(Color::Black);
+        let e4 = (4_f32, 3_f32);
+        let e2 = (4_f32, 1_f32);
+
+        let white_dest = white.square_bounds_f32(e4.0, e4.1);
+        let white_from = white.square_bounds_f32(e2.0, e2.1);
+        assert!(white_from.origin.y > white_dest.origin.y);
+
+        let black_dest = black.square_bounds_f32(e4.0, e4.1);
+        let black_from = black.square_bounds_f32(e2.0, e2.1);
+        assert!(black_from.origin.y < black_dest.origin.y);
     }
 }

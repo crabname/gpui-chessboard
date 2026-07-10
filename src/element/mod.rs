@@ -232,12 +232,13 @@ fn piece_square_bounds(
     state: &HeadlessState,
     key: &crate::types::Key,
 ) -> Bounds<Pixels> {
-    let mut sq = layout.square_bounds(file, rank);
+    let mut file = file as f32;
+    let mut rank = rank as f32;
     if let Some((df, dr)) = anim::offset_for(state, key) {
-        sq.origin.x += df * layout.square;
-        sq.origin.y -= dr * layout.square;
+        file += df;
+        rank += dr;
     }
-    sq
+    layout.square_bounds_f32(file, rank)
 }
 
 fn paint_ghost(

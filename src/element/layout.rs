@@ -132,16 +132,7 @@ impl BoardPaintLayout {
     }
 
     pub fn rank_label(&self, storage_rank: u8) -> char {
-        let mut rank = storage_rank;
-        if self.view.flip_ranks {
-            rank = 7 - rank;
-        }
-        RANKS[rank as usize]
-    }
-
-    /// Rank digit for coordinate margin at screen row (0 = top, always 8..=1).
-    pub fn screen_rank_label(screen_rank: u8) -> char {
-        RANKS[(7 - screen_rank) as usize]
+        RANKS[storage_rank as usize]
     }
 
     /// Map screen column (0 = left) and row (0 = top) to storage file/rank.
@@ -231,8 +222,19 @@ mod tests {
     }
 
     #[test]
-    fn rank_margin_labels_run_8_to_1_top_down() {
-        assert_eq!(Layout::screen_rank_label(0), '8');
-        assert_eq!(Layout::screen_rank_label(7), '1');
+    fn rank_labels_match_square_ranks() {
+        use crate::types::RANKS;
+
+        let white = GridView::from_orientation(Color::White);
+        let (_, top) = white.storage_coord_at_screen(0, 0);
+        let (_, bottom) = white.storage_coord_at_screen(0, 7);
+        assert_eq!(RANKS[top as usize], '8');
+        assert_eq!(RANKS[bottom as usize], '1');
+
+        let black = GridView::from_orientation(Color::Black);
+        let (_, top) = black.storage_coord_at_screen(0, 0);
+        let (_, bottom) = black.storage_coord_at_screen(0, 7);
+        assert_eq!(RANKS[top as usize], '1');
+        assert_eq!(RANKS[bottom as usize], '8');
     }
 }

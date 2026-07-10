@@ -183,7 +183,8 @@ fn paint_coordinates(layout: &Layout, window: &mut Window, cx: &mut App) {
     label_style.color = layout.label_color;
 
     for screen_file in 0..8u8 {
-        let sq = layout.square_bounds(screen_file, 0);
+        let (file, rank) = layout.storage_coord_at_screen(screen_file, 7);
+        let sq = layout.square_bounds(file, rank);
         let label = layout.file_label(screen_file).to_string();
         let mut run = label_style.to_run(label.len());
         run.color = layout.label_color;
@@ -195,8 +196,10 @@ fn paint_coordinates(layout: &Layout, window: &mut Window, cx: &mut App) {
         let _ = line.paint(point(x, y), font_size, TextAlign::Left, None, window, cx);
     }
 
-    for rank in 0..8u8 {
-        let sq = layout.square_bounds(0, rank);
+    let screen_file_col = if layout.ranks_on_left { 0 } else { 7 };
+    for screen_rank in 0..8u8 {
+        let (file, rank) = layout.storage_coord_at_screen(screen_file_col, screen_rank);
+        let sq = layout.square_bounds(file, rank);
         let label = layout.rank_label(rank).to_string();
         let mut run = label_style.to_run(label.len());
         run.color = layout.label_color;

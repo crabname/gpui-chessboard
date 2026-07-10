@@ -139,6 +139,11 @@ impl BoardPaintLayout {
         RANKS[rank as usize]
     }
 
+    /// Map screen column (0 = left) and row (0 = top) to storage file/rank.
+    pub fn storage_coord_at_screen(&self, screen_file: u8, screen_rank: u8) -> (u8, u8) {
+        self.view.storage_coord_at_screen(screen_file, screen_rank)
+    }
+
     /// Map a window-space pointer position to a board [`Key`].
     pub fn key_at_window_point(&self, position: Point<Pixels>) -> Option<Key> {
         let board = self.board;
@@ -193,10 +198,30 @@ fn eval_bar_bounds(
 #[cfg(test)]
 mod tests {
     use super::BoardPaintLayout as Layout;
+    use crate::geometry::GridView;
+    use crate::types::Color;
 
     #[test]
     fn a1_is_dark_h1_is_light() {
         assert!(!Layout::is_light_square(0, 0));
         assert!(Layout::is_light_square(7, 0));
+    }
+
+    #[test]
+    fn white_pov_bottom_left_is_a1() {
+        let view = GridView::from_orientation(Color::White);
+        assert_eq!(view.storage_coord_at_screen(0, 7), (0, 0));
+    }
+
+    #[test]
+    fn black_pov_bottom_left_is_h1() {
+        let view = GridView::from_orientation(Color::Black);
+        assert_eq!(view.storage_coord_at_screen(0, 7), (7, 7));
+    }
+
+    #[test]
+    fn black_pov_top_left_is_h8() {
+        let view = GridView::from_orientation(Color::Black);
+        assert_eq!(view.storage_coord_at_screen(0, 0), (7, 0));
     }
 }

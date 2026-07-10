@@ -46,6 +46,21 @@ impl GridView {
             },
         }
     }
+
+    /// Map screen column (0 = left) and row (0 = top) to storage file/rank.
+    pub fn storage_coord_at_screen(&self, screen_file: u8, screen_rank: u8) -> (u8, u8) {
+        let storage_file = if self.flip_files {
+            7 - screen_file
+        } else {
+            screen_file
+        };
+        let storage_rank = if self.flip_ranks {
+            screen_rank
+        } else {
+            7 - screen_rank
+        };
+        (storage_file, storage_rank)
+    }
 }
 
 /// Board topology: cell set and grid addressing.

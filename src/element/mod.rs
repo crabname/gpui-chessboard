@@ -200,7 +200,7 @@ fn paint_coordinates(layout: &Layout, window: &mut Window, cx: &mut App) {
     for screen_rank in 0..8u8 {
         let (file, rank) = layout.storage_coord_at_screen(screen_file_col, screen_rank);
         let sq = layout.square_bounds(file, rank);
-        let label = layout.rank_label(rank).to_string();
+        let label = Layout::screen_rank_label(screen_rank).to_string();
         let mut run = label_style.to_run(label.len());
         run.color = layout.label_color;
         let line = window

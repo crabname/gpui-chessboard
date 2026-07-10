@@ -139,6 +139,11 @@ impl BoardPaintLayout {
         RANKS[rank as usize]
     }
 
+    /// Rank digit for coordinate margin at screen row (0 = top, always 8..=1).
+    pub fn screen_rank_label(screen_rank: u8) -> char {
+        RANKS[(7 - screen_rank) as usize]
+    }
+
     /// Map screen column (0 = left) and row (0 = top) to storage file/rank.
     pub fn storage_coord_at_screen(&self, screen_file: u8, screen_rank: u8) -> (u8, u8) {
         self.view.storage_coord_at_screen(screen_file, screen_rank)
@@ -223,5 +228,11 @@ mod tests {
     fn black_pov_top_left_is_h8() {
         let view = GridView::from_orientation(Color::Black);
         assert_eq!(view.storage_coord_at_screen(0, 0), (7, 0));
+    }
+
+    #[test]
+    fn rank_margin_labels_run_8_to_1_top_down() {
+        assert_eq!(Layout::screen_rank_label(0), '8');
+        assert_eq!(Layout::screen_rank_label(7), '1');
     }
 }

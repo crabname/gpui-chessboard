@@ -120,7 +120,7 @@ impl BoardPaintLayout {
     }
 
     pub fn is_light_square(file: u8, rank: u8) -> bool {
-        (file + rank).is_multiple_of(2)
+        (file + rank) % 2 == 1
     }
 
     pub fn file_label(&self, screen_file: u8) -> char {
@@ -188,4 +188,15 @@ fn eval_bar_bounds(
         }
     };
     Bounds::new(point(x, board.origin.y), size(EVAL_BAR_WIDTH, board.size.height))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::BoardPaintLayout as Layout;
+
+    #[test]
+    fn a1_is_dark_h1_is_light() {
+        assert!(!Layout::is_light_square(0, 0));
+        assert!(Layout::is_light_square(7, 0));
+    }
 }
